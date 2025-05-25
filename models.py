@@ -29,6 +29,7 @@ class Email(Base):
     body = Column(Text, nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
     is_read = Column(Boolean, default=False)
+    is_spam = Column(Boolean, default=False)
 
     sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_emails")
     receiver = relationship("User", foreign_keys=[receiver_id], back_populates="received_emails")

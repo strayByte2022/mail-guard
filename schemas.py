@@ -23,6 +23,7 @@ class User(UserBase):
 class EmailBase(BaseModel):
     subject: Optional[str] = "No Subject"
     body: str
+    is_spam: bool = False
 
 class EmailCreate(EmailBase):
     receiver_email: EmailStr
@@ -33,6 +34,7 @@ class Email(EmailBase):
     receiver_id: int
     timestamp: datetime
     is_read: bool
+    is_spam: bool
     sender: User # To show sender details
     receiver: User # To show receiver details
 
