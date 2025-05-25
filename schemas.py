@@ -23,7 +23,6 @@ class User(UserBase):
 class EmailBase(BaseModel):
     subject: Optional[str] = "No Subject"
     body: str
-    is_spam: bool = False
 
 class EmailCreate(EmailBase):
     receiver_email: EmailStr

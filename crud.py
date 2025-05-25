@@ -50,7 +50,7 @@ def create_email(db: Session, email: schemas.EmailCreate, sender_id: int):
         receiver_id=receiver.id,
         subject=email.subject,
         body=email.body,
-        is_spam=getattr(email, 'is_spam', False)
+        is_spam=False
     )
     db.add(db_email)
     db.commit()
