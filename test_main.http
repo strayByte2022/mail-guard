@@ -1,0 +1,80 @@
+### Create User 1
+POST http://127.0.0.1:8000/users/
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "password123"
+}
+
+### Create User 2
+POST http://127.0.0.1:8000/users/
+Content-Type: application/json
+
+{
+  "email": "user2@example.com",
+  "password": "password456"
+}
+
+### Get User 1 (Me - assuming user ID 1 is hardcoded as current user for now)
+GET http://127.0.0.1:8000/users/me/
+
+### Send Email from User 1 to User 2
+# Note: This assumes current_user_id is hardcoded to 1 in main.py for /emails/send
+POST http://127.0.0.1:8000/emails/send
+Content-Type: application/json
+
+{
+  "receiver_email": "user2@example.com",
+  "subject": "Hello from User 1!",
+  "body": "This is a test email sent from User 1 to User 2."
+}
+
+### Send Another Email from User 1 to User 2
+POST http://127.0.0.1:8000/emails/send
+Content-Type: application/json
+
+{
+  "receiver_email": "user2@example.com",
+  "subject": "Meeting Reminder",
+  "body": "Just a reminder about our meeting tomorrow at 10 AM."
+}
+
+### Get Inbox for User 1 (assuming current_user_id is 1)
+# This should be empty unless User 2 replies or sends a new email to User 1
+GET http://127.0.0.1:8000/emails/inbox
+
+### Get Sent Mail for User 1 (assuming current_user_id is 1)
+GET http://127.0.0.1:8000/emails/sent
+
+### Get Email Details (Email ID 1, assuming current_user_id is 1)
+# Replace {email_id} with an actual email ID from the send response or inbox/sent list
+GET http://127.0.0.1:8000/emails/1
+
+### Mark Email as Read (Email ID 1, by User 1 - if User 1 is receiver)
+# This endpoint is more relevant if User 1 is the receiver of email 1.
+# For now, let's assume User 1 is checking an email they received (e.g., email_id 3 if user2 sent to user1)
+# PATCH http://127.0.0.1:8000/emails/{email_id_received_by_user1}/read
+
+### Root Endpoint
+GET http://127.0.0.1:8000/
+
+### Simulate User 2 sending an email to User 1
+# To test User 1's inbox properly, you'd need to either:
+# 1. Implement authentication and log in as User 2 to send an email.
+# 2. Temporarily change the hardcoded current_user_id in main.py to 2 for the /emails/send endpoint,
+#    send an email from User 2 to User 1, then change it back to 1 to check User 1's inbox.
+#
+# Example (if current_user_id was temporarily 2):
+# POST http://127.0.0.1:8000/emails/send
+# Content-Type: application/json
+#
+# {
+#   "receiver_email": "user1@example.com",
+#   "subject": "Reply from User 2!",
+#   "body": "Got your email! This is a reply."
+# }
+
+### Get Inbox for User 1 (after User 2 potentially sent an email)
+# If you simulated User 2 sending an email to User 1, this should now show it.
+# GET http://127.0.0.1:8000/emails/inbox
