@@ -125,6 +125,35 @@ def mark_as_read(email_id: int, db: Session = Depends(get_db), current_user: mod
         raise HTTPException(status_code=404, detail="Email not found or you are not the receiver.")
     return email
 
+@app.patch("/emails/{email_id}/mark-spam", response_model=schemas.Email, tags=["Emails"])
+def mark_as_spam(email_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    email = crud.get_email(db, email_id=email_id, user_id=current_user.id)
+    if email is None:
+        raise HTTPException(status_code=404, detail="Email not found or you don't have permission to view it.")
+    
+    # Add email to training data
+    clean_body = email.body.replace('\n', ' ').replace('\r', ' ').replace(',', ' ').replace('"', ' ')
+    with open("./model/email_text.csv", "a", encoding="utf-8") as f:
+        f.write(f"1,{clean_body}\n")
+
+    # Update email status
+    email.is_spam = True
+    db.commit()
+    db.refresh(email)
+    
+    # Check if we need to retrain model
+    with open("model/email_text.csv", "r", encoding="utf-8") as f:
+        line_count = sum(1 for _ in f)
+    
+    if line_count % 1000 == 0:
+        # Run model retraining in background with correct working directory
+        import subprocess
+        import os
+        model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model")
+        subprocess.Popen(["python", "is_mailguard.py"], cwd=model_path)
+    
+    return email
+
 
 # A simple root endpoint
 @app.get("/", tags=["Root"])
